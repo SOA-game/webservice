@@ -3,23 +3,22 @@ package model;
 import javax.persistence.*;
 
 /**
- * Created by Marek on 2015-05-28.
+ * Created by Marek on 2015-05-30.
  */
 @Entity
 @Table(name = "kategorie", schema = "public", catalog = "index")
 public class KategorieEntity {
-    private Integer id;
+    private int id;
     private String nazwa;
     private String atrybut;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id",unique=true, nullable = false)
-    public Integer getId() {
+    @Column(name = "id")
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -59,7 +58,7 @@ public class KategorieEntity {
 
     @Override
     public int hashCode() {
-        Integer result = id;
+        int result = id;
         result = 31 * result + (nazwa != null ? nazwa.hashCode() : 0);
         result = 31 * result + (atrybut != null ? atrybut.hashCode() : 0);
         return result;

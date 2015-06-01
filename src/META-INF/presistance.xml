@@ -7,8 +7,8 @@
     <property name="connection.url">jdbc:postgresql://localhost:5432/index</property>
     <property name="connection.driver_class">org.postgresql.Driver</property>
     <mapping class="model.ElementEntity"/>
-    <mapping class="model.ElementyEntity"/>
     <mapping class="model.KategoriaEntity"/>
+    <mapping class="model.ElementyEntity"/>
     <mapping class="model.KategorieEntity"/>
     <!-- DB schema will be updated if needed -->
     <!-- <property name="hbm2ddl.auto">update</property> -->

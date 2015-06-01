@@ -3,25 +3,24 @@ package model;
 import javax.persistence.*;
 
 /**
- * Created by Marek on 2015-05-28.
- * Entity defines type
+ * Created by Marek on 2015-05-30.
+ *
  */
 @Entity
 @Table(name = "elementy", schema = "public", catalog = "index")
 public class ElementyEntity {
-    private Integer id;
+    private int id;
     private String nazwa;
     private String atrybut1;
     private String atrybut2;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id",unique=true, nullable = false)
-    public Integer getId() {
+    @Column(name = "id")
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -72,7 +71,7 @@ public class ElementyEntity {
 
     @Override
     public int hashCode() {
-        Integer result = id;
+        int result = id;
         result = 31 * result + (nazwa != null ? nazwa.hashCode() : 0);
         result = 31 * result + (atrybut1 != null ? atrybut1.hashCode() : 0);
         result = 31 * result + (atrybut2 != null ? atrybut2.hashCode() : 0);
