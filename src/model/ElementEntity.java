@@ -1,6 +1,7 @@
 package model;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.Objects;
 
 /**
@@ -15,6 +16,7 @@ public class ElementEntity {
     private int parametr1;
     private String parametr2;
     private Integer kategoria;
+    private KategoriaEntity kategoriaEntity;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,6 +60,7 @@ public class ElementEntity {
     }
 
 //    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false, targetEntity = KategoriaEntity.class)
+//    cannot have KategoriaEntity property because of XML marschalling
     @JoinColumn(name = "kategoria", nullable = false)
     public Integer getKategoria() {
         return kategoria;

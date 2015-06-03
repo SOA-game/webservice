@@ -16,6 +16,7 @@ import javax.ejb.Singleton;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.xml.ws.Endpoint;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -24,7 +25,8 @@ import java.util.List;
  */
 @Singleton
 @WebService(targetNamespace = "http://test")
-public class IndexManager {
+public class IndexManager implements Serializable {
+
 
   private SessionFactory sessionFactory;
 
@@ -86,6 +88,7 @@ public class IndexManager {
     return entity.getList();
   }
 
+  @WebMethod
   public KategoriaEntity getCategoryEntity(final int id) {
     return perform(new Action() {
       KategoriaEntity kategoria;
@@ -97,14 +100,29 @@ public class IndexManager {
     }).kategoria;
   }
 
-  public void removeCategory(final KategoriaEntity entity) {
+  @WebMethod
+  public void removeCategory(final int id) {
     perform(new Action() {
       @Override
       public void run(Session session) {
-        int result = session.createQuery("delete from KategoriaEntity where id = :id")
-                .setParameter("id", entity.getId())
+        session.createQuery("delete from ElementEntity where kategoria = :id")
+                .setParameter("id", id)
                 .executeUpdate();
-        System.out.println(result);
+        session.createQuery("delete from KategoriaEntity where id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
+      }
+    });
+  }
+
+  @WebMethod
+  public void removeElement(final int id) {
+    perform(new Action() {
+      @Override
+      public void run(Session session) {
+        session.createQuery("delete from ElementEntity where id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
       }
     });
   }
