@@ -1,9 +1,6 @@
 package controlers.model;
 
-import controler.model.ws.Element;
-import controler.model.ws.Elementy;
-import controler.model.ws.Kategoria;
-import controler.model.ws.Kategorie;
+import model.ElementEntity;
 import model.ElementyEntity;
 import model.KategoriaEntity;
 import model.KategorieEntity;
@@ -19,8 +16,6 @@ import javax.ejb.Singleton;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.xml.ws.Endpoint;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,35 +50,38 @@ public class IndexManager {
   }
 
   @WebMethod
-  public void addCategory(final Kategoria typ) {
-    perform(new Saver(typ.toEntity()));
+  public void addCategory(final KategoriaEntity typ) {
+    perform(new Saver(typ));
   }
 
   @WebMethod
-  public void addElement(final Element typ) {
-    perform(new Saver(typ.toEntity()));
+  public void addElement(final ElementEntity typ) {
+    perform(new Saver(typ));
   }
 
+  @SuppressWarnings("unchecked")
   @WebMethod
-  public List<Kategorie> getCategoryTypes() {
-    Getter<Kategorie, KategorieEntity> entity = new Getter<>("KategorieEntity", Kategorie.class, KategorieEntity.class);
+  public List<KategorieEntity> getCategoryTypes() {
+    Getter entity = new Getter("KategorieEntity");
+    perform(entity);
+    return entity.getList();
+  }
+
+  @SuppressWarnings("unchecked")
+  @WebMethod
+  public List<ElementyEntity> getElementTypes() {
+    Getter entity = new Getter("ElementyEntity");
     perform(entity);
 
     return entity.getList();
   }
 
+  @SuppressWarnings("unchecked")
   @WebMethod
-  public List<Elementy> getElementTypes() {
-    Getter<Elementy, ElementyEntity> entity = new Getter<>("ElementyEntity", Elementy.class, ElementyEntity.class);
+  public List<KategoriaEntity> getCategories() {
+    Getter entity = new Getter("KategoriaEntity");
     perform(entity);
-
-    return entity.getList();
-  }
-
-  @WebMethod
-  public List<Kategoria> getCategories() {
-    Getter<Kategoria, KategoriaEntity> entity = new Getter<>("KategoriaEntity", Kategoria.class, KategoriaEntity.class);
-    perform(entity);
+    System.out.println(entity.getList());
 
     return entity.getList();
   }
@@ -97,6 +95,18 @@ public class IndexManager {
         kategoria = (KategoriaEntity) session.createQuery("from KategoriaEntity ke where ke.id = " + id).uniqueResult();
       }
     }).kategoria;
+  }
+
+  public void removeCategory(final KategoriaEntity entity) {
+    perform(new Action() {
+      @Override
+      public void run(Session session) {
+        int result = session.createQuery("delete from KategoriaEntity where id = :id")
+                .setParameter("id", entity.getId())
+                .executeUpdate();
+        System.out.println(result);
+      }
+    });
   }
 
   @PostConstruct
@@ -132,44 +142,21 @@ class Saver implements Action {
   }
 }
 
-class Getter<Ret, Entity> implements Action {
-  private List<Ret> list;
+class Getter implements Action {
+  private List list;
 
-  public Getter(String entity, Class<Ret> retClass, Class<Entity> entityClass) {
+  public Getter(String entity) {
     this.entity = entity;
-    this.retClass = retClass;
-    this.entityClass = entityClass;
   }
 
   private String entity;
-  private Class<Ret> retClass;
-  private Class<Entity> entityClass;
 
   @Override
   public void run(Session session) {
-    List ret = session.createQuery("from " + entity).list();
-
-    list = new ArrayList<>();
-    for (Object o : ret) {
-      try {
-        list.add(retClass.getConstructor(entityClass).newInstance(o));
-      } catch (InstantiationException e) {
-        e.printStackTrace();
-        System.out.println("ie");
-      } catch (IllegalAccessException e) {
-        System.out.println("iae");
-        e.printStackTrace();
-      } catch (InvocationTargetException e) {
-        System.out.println("ite");
-        e.printStackTrace();
-      } catch (NoSuchMethodException e) {
-        System.out.println("nsme");
-        e.printStackTrace();
-      }
-    }
+    list = session.createQuery("from " + entity).list();
   }
 
-  public List<Ret> getList() {
+  public List getList() {
     return list;
   }
 }

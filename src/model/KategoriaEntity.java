@@ -16,7 +16,7 @@ public class KategoriaEntity {
 
     private Collection<ElementEntity> elementy;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "kategoria", orphanRemoval = false)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "kategoria", orphanRemoval = false)
     public Collection<ElementEntity> getElementy() {
         return elementy;
     }
@@ -36,7 +36,7 @@ public class KategoriaEntity {
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "typ", nullable = false)
     public KategorieEntity getTyp() {
         return typ;

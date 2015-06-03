@@ -1,9 +1,7 @@
 package model;
 
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlTransient;
+import java.util.Objects;
 
 /**
  * Created by Marek on 2015-05-30.
@@ -16,7 +14,7 @@ public class ElementEntity {
     private ElementyEntity typ;
     private int parametr1;
     private String parametr2;
-    private KategoriaEntity kategoria;
+    private Integer kategoria;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +27,7 @@ public class ElementEntity {
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "typ", nullable = false)
     public ElementyEntity getTyp() {
         return typ;
@@ -59,13 +57,13 @@ public class ElementEntity {
         this.parametr2 = parametr2;
     }
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false, targetEntity = KategoriaEntity.class)
+//    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false, targetEntity = KategoriaEntity.class)
     @JoinColumn(name = "kategoria", nullable = false)
-    public KategoriaEntity getKategoria() {
+    public Integer getKategoria() {
         return kategoria;
     }
 
-    public void setKategoria(KategoriaEntity kategoria) {
+    public void setKategoria(Integer kategoria) {
         this.kategoria = kategoria;
     }
 
@@ -79,7 +77,7 @@ public class ElementEntity {
         if (id != that.id) return false;
         if (typ != that.typ) return false;
         if (parametr1 != that.parametr1) return false;
-        if (kategoria != that.kategoria) return false;
+        if (!Objects.equals(kategoria, that.kategoria)) return false;
         if (parametr2 != null ? !parametr2.equals(that.parametr2) : that.parametr2 != null) return false;
 
         return true;
@@ -91,7 +89,7 @@ public class ElementEntity {
         result = 31 * result + typ.hashCode();
         result = 31 * result + parametr1;
         result = 31 * result + (parametr2 != null ? parametr2.hashCode() : 0);
-        result = 31 * result + kategoria.hashCode();
+        result = 31 * result + kategoria;
         return result;
     }
 }
