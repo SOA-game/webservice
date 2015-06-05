@@ -7,6 +7,16 @@ import java.util.Collection;
  * Created by Marek on 2015-05-30.
  *
  */
+@NamedQueries({
+        @NamedQuery(
+                name = "CAN HAS CATEGORY?",
+                query = "from KategoriaEntity where id = :IZ_ID"
+        ),
+        @NamedQuery(
+                name = "CAN HAS CATEGORIES?",
+                query = "FROM KategoriaEntity "
+        )
+})
 @Entity
 @Table(name = "kategoria", schema = "public", catalog = "index")
 public class KategoriaEntity {

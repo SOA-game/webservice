@@ -6,6 +6,12 @@ import javax.persistence.*;
  * Created by Marek on 2015-05-30.
  *
  */
+@NamedQueries({
+        @NamedQuery(
+                name = "CAN HAS ELEMENT TYPES?",
+                query = "from ElementyEntity "
+        )
+})
 @Entity
 @Table(name = "elementy", schema = "public", catalog = "index")
 public class ElementyEntity {

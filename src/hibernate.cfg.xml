@@ -6,7 +6,7 @@
     <session-factory>
         <property name="connection.url">jdbc:postgresql://localhost:5432/index</property>
         <property name="connection.driver_class">org.postgresql.Driver</property>
-        <property name="show_sql">true</property>
+        <property name="show_sql">false</property>
         <property name="dialect">org.hibernate.dialect.PostgreSQL82Dialect</property>
         <property name="hibernate.connection.username">postgres</property>
         <property name="hibernate.connection.password">!@#123QWE</property>

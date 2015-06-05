@@ -8,6 +8,12 @@ import java.util.Objects;
  * Created by Marek on 2015-05-30.
  *
  */
+@NamedQueries({
+        @NamedQuery(
+                name = "CAN HAS ELEMENT?",
+                query = "from ElementEntity where id = :IZ_ID"
+        )
+})
 @Entity
 @Table(name = "element", schema = "public", catalog = "index")
 public class ElementEntity {
@@ -59,7 +65,7 @@ public class ElementEntity {
         this.parametr2 = parametr2;
     }
 
-//    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false, targetEntity = KategoriaEntity.class)
+    //    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false, targetEntity = KategoriaEntity.class)
 //    cannot have KategoriaEntity property because of XML marschalling
     @JoinColumn(name = "kategoria", nullable = false)
     public Integer getKategoria() {

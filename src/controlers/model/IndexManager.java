@@ -1,9 +1,11 @@
 package controlers.model;
 
+import javafx.util.Pair;
 import model.ElementEntity;
 import model.ElementyEntity;
 import model.KategoriaEntity;
 import model.KategorieEntity;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -17,6 +19,7 @@ import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.xml.ws.Endpoint;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -64,40 +67,51 @@ public class IndexManager implements Serializable {
   @SuppressWarnings("unchecked")
   @WebMethod
   public List<KategorieEntity> getCategoryTypes() {
-    Getter entity = new Getter("KategorieEntity");
-    perform(entity);
-    return entity.getList();
+    return perform(
+            new HAI("CAN HAS CATEGORY TYPES?")
+                    .I_HAS_A_LIST())
+            .KTHXBYE();
   }
 
   @SuppressWarnings("unchecked")
   @WebMethod
   public List<ElementyEntity> getElementTypes() {
-    Getter entity = new Getter("ElementyEntity");
-    perform(entity);
-
-    return entity.getList();
+    return perform(
+            new HAI("CAN HAS ELEMENT TYPES?")
+                    .I_HAS_A_LIST())
+            .KTHXBYE();
   }
 
   @SuppressWarnings("unchecked")
   @WebMethod
   public List<KategoriaEntity> getCategories() {
-    Getter entity = new Getter("KategoriaEntity");
-    perform(entity);
-    System.out.println(entity.getList());
-
-    return entity.getList();
+    return perform(
+            new HAI("CAN HAS CATEGORIES?")
+                    .I_HAS_A_LIST())
+            .KTHXBYE();
   }
 
   @WebMethod
   public KategoriaEntity getCategoryEntity(final int id) {
-    return perform(new Action() {
-      KategoriaEntity kategoria;
+    return (KategoriaEntity) perform(
+            new HAI("CAN HAS CATEGORY?")
+                    .I_HAS_A_UNIQUE_RESULT()
+                    .IM_IN_YR_DECLARATION()
+                    .AND("IZ_ID", Integer.toString(id))
+                    .IM_OUTTA_YR_DECLARATION())
+            .KTHXBYE();
+//    return (KategoriaEntity) perform(new EntityGetter(id, "KategoriaEntity")).KTHXBYE();
+  }
 
-      @Override
-      public void run(Session session) {
-        kategoria = (KategoriaEntity) session.createQuery("from KategoriaEntity ke where ke.id = " + id).uniqueResult();
-      }
-    }).kategoria;
+  @WebMethod
+  public ElementEntity getElementEntity(final int id) {
+    return (ElementEntity) perform(
+            new HAI("CAN HAS ELEMENT?")
+                    .I_HAS_A_UNIQUE_RESULT()
+                    .IM_IN_YR_DECLARATION()
+                    .AND("IZ_ID", String.valueOf(id))
+                    .IM_OUTTA_YR_DECLARATION())
+            .KTHXBYE();
   }
 
   @WebMethod
@@ -125,6 +139,16 @@ public class IndexManager implements Serializable {
                 .executeUpdate();
       }
     });
+  }
+
+  @WebMethod
+  public void editElement(final ElementEntity entity) {
+    perform(new Updater(entity));
+  }
+
+  @WebMethod
+  public void editCategory(final KategoriaEntity entity) {
+    perform(new Updater(entity));
   }
 
   @PostConstruct
@@ -176,5 +200,121 @@ class Getter implements Action {
 
   public List getList() {
     return list;
+  }
+}
+
+class EntityGetter implements Action {
+
+  private int id;
+  private Object result;
+  private String entity;
+
+  EntityGetter(int id, String entity) {
+    this.id = id;
+    this.entity = entity;
+  }
+
+  @Override
+  public void run(Session session) {
+    result = session.createQuery("from " + entity + " where id=:id")
+            .setParameter("id", id)
+            .uniqueResult();
+  }
+
+  public Object getResult() {
+    return result;
+  }
+}
+
+class HAI {
+
+  private final String query;
+
+  HAI(String query) {
+    this.query = query;
+  }
+
+  public UNIQUE_RESULT I_HAS_A_UNIQUE_RESULT() {
+    return new UNIQUE_RESULT(query);
+  }
+
+  public LIST_RESULT I_HAS_A_LIST() {
+    return new LIST_RESULT(query);
+  }
+}
+
+abstract class RESULT implements Action {
+  protected String query;
+  protected Object result;
+
+  public RESULT(String query) {
+    this.query = query;
+  }
+
+  public Object KTHXBYE() {
+    return result;
+  }
+}
+
+class UNIQUE_RESULT extends RESULT {
+  protected ArrayList<Pair<String, String>> parameters = new ArrayList<>();
+
+  public UNIQUE_RESULT(String query) {
+    super(query);
+  }
+
+  @Override
+  public void run(Session session) {
+    Query query = session.getNamedQuery(this.query);
+    for (Pair<String, String> parameter : parameters) {
+      query.setString(parameter.getKey(), parameter.getValue());
+    }
+    result = query.uniqueResult();
+  }
+  public VARZ IM_IN_YR_DECLARATION() {
+    return new VARZ();
+  }
+
+  public class VARZ {
+    public VARZ AND(String parameter, String value) {
+      parameters.add(new Pair<>(parameter, value));
+      return this;
+    }
+
+    public UNIQUE_RESULT IM_OUTTA_YR_DECLARATION() {
+      return UNIQUE_RESULT.this;
+    }
+  }
+}
+
+class LIST_RESULT extends RESULT {
+  List result;
+
+  public LIST_RESULT(String query) {
+    super(query);
+  }
+
+  @Override
+  public void run(Session session) {
+    result = session.getNamedQuery(query).list();
+  }
+
+  @Override
+  public List KTHXBYE() {
+    return result;
+  }
+}
+
+class Updater implements Action {
+
+  private Object entity;
+
+  Updater(Object entity) {
+    this.entity = entity;
+  }
+
+  @Override
+  public void run(Session session) {
+    session.update(entity);
   }
 }
